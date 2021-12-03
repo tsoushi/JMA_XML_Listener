@@ -61,6 +61,8 @@ class MyApp(JMAQuakeXML):
 
         ps = jparser.EqHypocenter(res.content)
         text = '\n' + ps.tostring()
+
+        print(text)
         
         lineSender(text)
 
@@ -78,6 +80,8 @@ class MyApp(JMAQuakeXML):
         ps = jparser.EqIntensity(res.content)
         text = '\n' + ps.tostring()
 
+        print(text)
+        
         if '東京都' in [i['name'] for i in ps.intensityVerbose]:
             self._logger.info('sending to family')
             lineSender(text, tokenName='family')
@@ -97,6 +101,8 @@ class MyApp(JMAQuakeXML):
         ps = jparser.EqVerbose(res.content)
         text = '\n' + ps.tostring()
 
+        print(text)
+        
         if '東京都' in [i['name'] for i in ps.intensityVerbose]:
             self._logger.info('sending to family')
             lineSender(text, tokenName='family')
@@ -124,7 +130,7 @@ if __name__ == '__main__':
     logger_g = logging.getLogger(jmaGetter.__name__)
     streamHandler = logging.StreamHandler()
     streamHandler.setLevel(LOGLEVEL)
-    streamHandler.setFormatter(logging.Formatter('%(levelname)s - %(name)s - %(message)s'))
+    streamHandler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s'))
     logger.addHandler(streamHandler)
     logger_g.addHandler(streamHandler)
     logger.setLevel(LOGLEVEL)
