@@ -4,8 +4,51 @@ import time
 import datetime
 import threading
 
+import jparser
+import soushi
+
 import logging
 logger = logging.getLogger(__name__)
+
+#
+# 指定回数リトライするリクエスト関数
+#
+def autoRetryRequest(url, retry=3, timeout=10, sleep=10):
+    errCount = 0
+    while 1:
+        if errCount >= retry:
+            raise Exception('exceed the retry count')
+
+        logger.debug('requesting : {}'.format(url))
+        try:
+            res = requests.get(url)
+        except Exception as e:
+            errCount += 1
+            logger.debug('requesting -> fail : {} : error count {} / {}'.format(e, errCount, retry))
+            continue
+
+        if res.status_code != 200:
+            errCount += 1
+            logger.debug('requesting -> fail : status code {} : error count {} / {}'.format(res.status_code, errCount, retry))
+            continue
+        else:
+            logger.debug('requesting -> complete')
+            return res
+
+#
+# 1000文字を超える場合は分割して送信する
+#
+def lineSender(text, tokenName=None):
+    count = 0
+    while 1:
+        current = text[count*1000: (count+1)*1000]
+        if current == '':
+            return
+        if tokenName:
+            soushi.lineNotify(current, tokenName)
+        else:
+            soushi.lineNotify(current)
+        count += 1
 
 
 class JMAQuakeXML:
@@ -149,16 +192,36 @@ class JMAQuakeXML:
         return
 
     def update_eqCenter(self, data):
-        self._logger.info(data['title'])
-        pass
+        self._logger.info('execute : {}'.format(data['title']))
+
+        res = autoRetryRequest(data['link'])
+
+        text = jparser.EqHypocenter(res.content).tostring()
+        lineSender(text)
+
+        self._logger.info('execute : {} -> complete'.format(data['title']))
+        
 
     def update_eqIntensity(self, data):
-        self._logger.info(data['title'])
-        pass
+        self._logger.info('execute : {}'.format(data['title']))
+
+        res = autoRetryRequest(data['link'])
+
+        text = jparser.EqIntensity(res.content).tostring()
+        lineSender(text)
+
+        self._logger.info('execute : {} -> complete'.format(data['title']))
 
     def update_eqVerbose(self, data):
-        self._logger.info(data['title'])
-        pass
+        self._logger.info('execute : {}'.format(data['title']))
+
+        res = autoRetryRequest(data['link'])
+
+        text = jparser.EqVerbose(res.content).tostring()
+        lineSender(text)
+
+        self._logger.info('execute : {} -> complete'.format(data['title']))
+
 
 if __name__ == '__main__':
     import argparse
