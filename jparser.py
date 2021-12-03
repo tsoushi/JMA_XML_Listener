@@ -140,7 +140,7 @@ class EqHypocenter(EqBase):
 
     @property
     def magnitude(self):
-        return int(self.magnitude_raw)
+        return float(self.magnitude_raw)
 
     @property
     def magnitude_text(self):
