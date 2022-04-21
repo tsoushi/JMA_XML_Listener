@@ -3,7 +3,7 @@ import requests
 import jparser
 import jmaGetter
 from jmaGetter import JMAQuakeXML
-import soushi
+import lineNotify
 
 import logging
 logger = logging.getLogger(__name__)
@@ -44,9 +44,9 @@ def lineSender(text, tokenName=None):
         if current == '':
             return
         if tokenName:
-            soushi.lineNotify(current, tokenName)
+            lineNotify.lineNotify(current, tokenName)
         else:
-            soushi.lineNotify(current)
+            lineNotify.lineNotify(current)
         count += 1
 
 
