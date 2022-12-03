@@ -3,7 +3,7 @@ from messageClient import discordWebhook
 import config
 
 import logging
-logger = logging.getLogger('MessageSender')
+logger = logging.getLogger(__name__)
 
 def send(text, image=None, emergency=False):
     # LineNotifyで送信

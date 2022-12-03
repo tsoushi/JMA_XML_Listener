@@ -98,6 +98,7 @@ class MyApp(JMAQuakeXML):
 
 if __name__ == '__main__':
     import argparse
+    from send import logger as logger_send
     parser = argparse.ArgumentParser()
     parser.add_argument('--sleep', '-s', default=30, type=int, help='取得頻度')
     parser.add_argument('--loglevel', '-l', default='info', choices=['debug', 'info'], type=str, help='ログ出力レベル')
@@ -117,8 +118,10 @@ if __name__ == '__main__':
     streamHandler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s'))
     logger.addHandler(streamHandler)
     logger_g.addHandler(streamHandler)
+    logger_send.addHandler(streamHandler)
     logger.setLevel(LOGLEVEL)
     logger_g.setLevel(LOGLEVEL)
+    logger_send.setLevel(LOGLEVEL)
 
     jma = MyApp()
     jma.mainloop(sleep=args.sleep, skipFirst=not args.notskipfirst)
