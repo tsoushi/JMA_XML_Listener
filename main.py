@@ -3,7 +3,8 @@ import requests
 import jparser
 import jmaGetter
 from jmaGetter import JMAQuakeXML
-import lineNotify
+from send import send
+from config import HOME_NAME
 
 import logging
 logger = logging.getLogger(__name__)
@@ -34,21 +35,6 @@ def autoRetryRequest(url, retry=3, timeout=10, sleep=10):
             logger.debug('requesting -> complete')
             return res
 
-#
-# 1000文字を超える場合は分割して送信する
-#
-def lineSender(text, tokenName=None):
-    count = 0
-    while 1:
-        current = text[count*1000: (count+1)*1000]
-        if current == '':
-            return
-        if tokenName:
-            lineNotify.lineNotify(current, tokenName)
-        else:
-            lineNotify.lineNotify(current)
-        count += 1
-
 
 class MyApp(JMAQuakeXML):
     #
@@ -64,7 +50,7 @@ class MyApp(JMAQuakeXML):
 
         print(text)
         
-        lineSender(text)
+        send(text)
 
         self._logger.info('execute : {} -> complete'.format(data['title']))
         
@@ -82,11 +68,10 @@ class MyApp(JMAQuakeXML):
 
         print(text)
         
-        if '東京都' in [i['name'] for i in ps.intensityVerbose]:
-            self._logger.info('sending to family')
-            lineSender(text, tokenName='family')
+        if HOME_NAME in [i['name'] for i in ps.intensityVerbose]:
+            send(text, emergency=True)
 
-        lineSender(text)
+        send(text)
 
         self._logger.info('execute : {} -> complete'.format(data['title']))
 
@@ -103,11 +88,10 @@ class MyApp(JMAQuakeXML):
 
         print(text)
         
-        if '東京都' in [i['name'] for i in ps.intensityVerbose]:
-            self._logger.info('sending to family')
-            lineSender(text, tokenName='family')
+        if HOME_NAME in [i['name'] for i in ps.intensityVerbose]:
+            send(text, emergency=True)
 
-        lineSender(text)
+        send(text)
 
         self._logger.info('execute : {} -> complete'.format(data['title']))
 
